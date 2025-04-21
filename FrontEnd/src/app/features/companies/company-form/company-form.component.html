@@ -1,0 +1,170 @@
+<!-- src/app/features/companies/company-form/company-form.component.html -->
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <div class="header-image">
+        <mat-icon>business</mat-icon>
+      </div>
+      <mat-card-title>{{ isEditMode ? 'Edit Company' : 'Create Company' }}</mat-card-title>
+      <mat-card-subtitle>Enter company information</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+        <div class="form-section">
+          <h3>Basic Information</h3>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Company Name</mat-label>
+              <input matInput formControlName="name" required>
+              <mat-icon matPrefix>business</mat-icon>
+              <mat-error *ngIf="f['name'].errors?.['required']">
+                Company name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Sector</mat-label>
+              <input matInput formControlName="sector" required>
+              <mat-icon matPrefix>category</mat-icon>
+              <mat-error *ngIf="f['sector'].errors?.['required']">
+                Sector is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="form-section">
+          <h3>Location</h3>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Department</mat-label>
+              <mat-select formControlName="departmentId" required>
+                <mat-option *ngFor="let department of departments" [value]="department.id">
+                  {{ department.name }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>map</mat-icon>
+              <mat-spinner *ngIf="loadingDepartments" diameter="20"></mat-spinner>
+              <mat-error *ngIf="f['departmentId'].errors?.['required']">
+                Department is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>City</mat-label>
+              <mat-select formControlName="cityId" required [disabled]="!f['departmentId'].value || loadingCities">
+                <mat-option *ngFor="let city of cities" [value]="city.id">
+                  {{ city.name }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>location_city</mat-icon>
+              <mat-spinner *ngIf="loadingCities" diameter="20"></mat-spinner>
+              <mat-error *ngIf="f['cityId'].errors?.['required']">
+                City is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" required>
+            <mat-icon matPrefix>home</mat-icon>
+            <mat-error *ngIf="f['address'].errors?.['required']">
+              Address is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="form-section">
+          <h3>Contact Information</h3>
+
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone" required>
+            <mat-icon matPrefix>phone</mat-icon>
+            <mat-error *ngIf="f['phone'].errors?.['required']">
+              Phone is required
+            </mat-error>
+            <mat-error *ngIf="f['phone'].errors?.['pattern']">
+              Please enter a valid 10-digit phone number
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="form-section">
+          <h3>Financial Information</h3>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Assets</mat-label>
+              <input matInput type="number" formControlName="assets" required>
+              <mat-icon matPrefix>trending_up</mat-icon>
+              <mat-error *ngIf="f['assets'].errors?.['required']">
+                Assets value is required
+              </mat-error>
+              <mat-error *ngIf="f['assets'].errors?.['min']">
+                Assets value must be greater than or equal to 0
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Liabilities</mat-label>
+              <input matInput type="number" formControlName="liabilities" required>
+              <mat-icon matPrefix>trending_down</mat-icon>
+              <mat-error *ngIf="f['liabilities'].errors?.['required']">
+                Liabilities value is required
+              </mat-error>
+              <mat-error *ngIf="f['liabilities'].errors?.['min']">
+                Liabilities value must be greater than or equal to 0
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="form-section">
+          <h3>Products</h3>
+
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Products</mat-label>
+            <mat-select formControlName="productIds" multiple [compareWith]="compareProducts">
+              <mat-option *ngFor="let product of products" [value]="product.id">
+                {{ product.name }} (${{ product.price | number:'1.2-2' }})
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>inventory</mat-icon>
+            <mat-spinner *ngIf="loadingProducts" diameter="20"></mat-spinner>
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="form-actions">
+      <button mat-stroked-button routerLink="/companies" type="button">
+        <mat-icon>cancel</mat-icon> Cancel
+      </button>
+      <button mat-raised-button color="primary" (click)="onSubmit()"
+              [disabled]="companyForm.invalid || loading">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">
+          <mat-icon>{{ isEditMode ? 'save' : 'add_business' }}</mat-icon>
+          {{ isEditMode ? 'Save Changes' : 'Create Company' }}
+        </span>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

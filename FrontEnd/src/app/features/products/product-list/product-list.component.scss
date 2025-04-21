@@ -1,0 +1,135 @@
+.product-list-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+
+  .header-content {
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #3f51b5;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.product-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ff9800;
+    color: white;
+    border-radius: 50%;
+    margin-right: 16px;
+  }
+
+  mat-card-content {
+    padding: 16px 0;
+
+    .price {
+      font-size: 24px;
+      font-weight: 500;
+      color: #4caf50;
+      margin-bottom: 16px;
+    }
+
+    .company-list {
+      h4 {
+        margin: 8px 0;
+        color: rgba(0, 0, 0, 0.7);
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+
+        li {
+          margin-bottom: 4px;
+        }
+      }
+    }
+
+    .no-companies {
+      color: rgba(0, 0, 0, 0.5);
+      font-style: italic;
+    }
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  text-align: center;
+
+  mat-icon {
+    font-size: 64px;
+    height: 64px;
+    width: 64px;
+    color: rgba(0, 0, 0, 0.2);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    margin: 0 0 8px 0;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  p {
+    margin: 0 0 24px 0;
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .header-actions {
+      margin-top: 16px;
+    }
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

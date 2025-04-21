@@ -1,0 +1,101 @@
+<div class="company-detail-container">
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" routerLink="/companies">
+      Back to Companies
+    </button>
+  </div>
+
+  <mat-card *ngIf="!loading && !error && company">
+    <mat-card-header>
+      <mat-card-title>{{ company.name }}</mat-card-title>
+      <mat-card-subtitle>
+        <mat-chip color="primary" selected>{{ company.sector }}</mat-chip>
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="detail-section">
+        <h3>Company Information</h3>
+        <div class="detail-row">
+          <span class="label">Phone:</span>
+          <span class="value">{{ company.phone }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Address:</span>
+          <span class="value">{{ company.address }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Location:</span>
+          <span class="value">{{ company.city?.name || 'N/A' }}, {{ company.department?.name || 'N/A' }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="detail-section">
+        <h3>Financial Information</h3>
+        <div class="detail-row">
+          <span class="label">Assets:</span>
+          <span class="value">${{ company.assets | number:'1.2-2' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Liabilities:</span>
+          <span class="value">${{ company.liabilities | number:'1.2-2' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Net Worth:</span>
+          <span class="value">${{ (company.assets - company.liabilities) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="detail-section">
+        <h3>Products</h3>
+        <mat-list role="list">
+          <ng-container *ngIf="company.products && company.products.length > 0; else noProducts">
+            <mat-list-item role="listitem" *ngFor="let product of company.products">
+              {{ product.name }} - {{ product.category }} (${{ product.price | number:'1.2-2' }})
+            </mat-list-item>
+          </ng-container>
+          <ng-template #noProducts>
+            <mat-list-item role="listitem">No products available</mat-list-item>
+          </ng-template>
+        </mat-list>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="detail-section">
+        <h3>Employees</h3>
+        <mat-list role="list">
+          <ng-container *ngIf="company.users && company.users.length > 0; else noUsers">
+            <mat-list-item role="listitem" *ngFor="let user of company.users">
+              {{ user.firstName }} {{ user.lastName }} - {{ user.position }}
+            </mat-list-item>
+          </ng-container>
+          <ng-template #noUsers>
+            <mat-list-item role="listitem">No employees available</mat-list-item>
+          </ng-template>
+        </mat-list>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button routerLink="/companies">
+        <mat-icon>arrow_back</mat-icon> Back
+      </button>
+      <button mat-raised-button color="accent" [routerLink]="['/companies/edit', company.id]" *ngIf="isAdmin">
+        <mat-icon>edit</mat-icon> Edit
+      </button>
+      <button mat-raised-button color="warn" (click)="deleteCompany()" *ngIf="isAdmin">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

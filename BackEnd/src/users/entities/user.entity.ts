@@ -30,7 +30,7 @@ export class User {
   @Column({ length: 100 })
   position: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column()
   salary: number;
 
   @Column({ length: 20 })

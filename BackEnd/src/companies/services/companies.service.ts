@@ -7,6 +7,7 @@ import { Department } from '../../departments/entities/department.entity';
 import { Product } from '../../products/entities/product.entity';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class CompaniesService {
@@ -19,6 +20,8 @@ export class CompaniesService {
     private departmentsRepository: Repository<Department>,
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
@@ -112,5 +115,31 @@ export class CompaniesService {
   async remove(id: number): Promise<void> {
     const company = await this.findOne(id);
     await this.companiesRepository.remove(company);
+  }
+
+  async findByUserId(userId: number): Promise<Company[]> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['company'],
+    });
+
+    if (!user || !user.company) {
+      return [];
+    }
+
+    return [user.company];
+  }
+
+  async checkUserAccess(companyId: number, userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['company'],
+    });
+
+    if (!user || !user.company) {
+      return false;
+    }
+
+    return user.company.id === companyId;
   }
 }

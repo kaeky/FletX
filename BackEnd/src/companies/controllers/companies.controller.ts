@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  ForbiddenException,
+  Request,
 } from '@nestjs/common';
 import { CompaniesService } from '../services/companies.service';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -28,13 +30,34 @@ export class CompaniesController {
   }
 
   @Get()
-  findAll() {
-    return this.companiesService.findAll();
+  @UseGuards(JwtAuthGuard)
+  async findAll(@Request() req) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    if (userRole === 'admin') {
+      return this.companiesService.findAll();
+    }
+
+    return this.companiesService.findByUserId(userId);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string, @Request() req) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    // Si es admin, permite acceso directo
+    if (userRole === 'admin') {
+      return this.companiesService.findOne(+id);
+    }
+
+    const hasAccess = await this.companiesService.checkUserAccess(+id, userId);
+    if (!hasAccess) {
+      throw new ForbiddenException('You do not have access to this company');
+    }
+
     return this.companiesService.findOne(+id);
   }
 

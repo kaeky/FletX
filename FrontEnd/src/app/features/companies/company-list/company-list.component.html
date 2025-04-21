@@ -1,0 +1,71 @@
+<div class="company-list-container">
+  <h1>Companies</h1>
+
+  <div class="actions-container" *ngIf="isAdmin">
+    <button mat-raised-button color="primary" routerLink="/companies/new">
+      <mat-icon>add</mat-icon> New Company
+    </button>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  <div class="table-container" *ngIf="!loading">
+    <table mat-table [dataSource]="companies" class="mat-elevation-z8">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let company">{{ company.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let company">{{ company.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="sector">
+        <th mat-header-cell *matHeaderCellDef>Sector</th>
+        <td mat-cell *matCellDef="let company">{{ company.sector }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="location">
+        <th mat-header-cell *matHeaderCellDef>Location</th>
+        <td mat-cell *matCellDef="let company">
+          {{ company.city?.name || 'N/A' }}, {{ company.department?.name || 'N/A' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="financials">
+        <th mat-header-cell *matHeaderCellDef>Financials</th>
+        <td mat-cell *matCellDef="let company">
+          <div>Assets: ${{ company.assets | number:'1.2-2' }}</div>
+          <div>Liabilities: ${{ company.liabilities | number:'1.2-2' }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let company">
+          <button mat-icon-button color="primary" [routerLink]="['/companies', company.id]"
+                  matTooltip="View Details">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" [routerLink]="['/companies/edit', company.id]"
+                  matTooltip="Edit" *ngIf="isAdmin">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteCompany(company.id)"
+                  matTooltip="Delete" *ngIf="isAdmin">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="no-data" *ngIf="companies.length === 0">
+      <p>No companies found</p>
+    </div>
+  </div>
+</div>

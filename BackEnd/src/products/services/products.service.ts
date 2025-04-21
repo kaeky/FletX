@@ -5,6 +5,7 @@ import { Product } from '../entities/product.entity';
 import { Company } from '../../companies/entities/company.entity';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -13,6 +14,8 @@ export class ProductsService {
     private productsRepository: Repository<Product>,
     @InjectRepository(Company)
     private companiesRepository: Repository<Company>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -33,7 +36,11 @@ export class ProductsService {
     });
   }
 
-  async findOne(id: number): Promise<Product> {
+  async findOne(
+    id: number,
+    userId?: number,
+    userRole?: string,
+  ): Promise<Product> {
     const product = await this.productsRepository.findOne({
       where: { id },
       relations: ['companies'],
@@ -41,6 +48,21 @@ export class ProductsService {
 
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+
+    if (userRole !== 'admin' && userId) {
+      const user = await this.usersRepository.findOne({
+        where: { id: userId },
+        relations: ['company'],
+      });
+
+      if (user && user.company) {
+        product.companies = product.companies.filter(
+          (company) => company.id === user.company.id,
+        );
+      } else {
+        product.companies = [];
+      }
     }
 
     return product;
@@ -64,5 +86,31 @@ export class ProductsService {
   async remove(id: number): Promise<void> {
     const product = await this.findOne(id);
     await this.productsRepository.remove(product);
+  }
+
+  async findByUserId(userId: number): Promise<Product[]> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['company', 'company.products'],
+    });
+
+    if (!user || !user.company) {
+      return [];
+    }
+
+    return user.company.products || [];
+  }
+
+  async checkUserAccess(productId: number, userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['company', 'company.products'],
+    });
+
+    if (!user || !user.company || !user.company.products) {
+      return false;
+    }
+
+    return user.company.products.some((product) => product.id === productId);
   }
 }

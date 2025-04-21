@@ -26,6 +26,16 @@ export const routes: Routes = [
     data: { roles: [UserRole.ADMIN] }
   },
   {
+    path: 'companies',
+    loadChildren: () => import('./features/companies/companies.routes').then(r => r.COMPANIES_ROUTES),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'products',
+    loadChildren: () => import('./features/products/products.routes').then(r => r.PRODUCTS_ROUTES),
+    canActivate: [AuthGuard]
+  },
+  {
     path: '403',
     loadComponent: () => import('./shared/components/errors/forbidden/forbidden.component')
       .then(c => c.ForbiddenComponent)

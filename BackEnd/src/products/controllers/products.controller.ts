@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -29,14 +31,33 @@ export class ProductsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.productsService.findAll();
+  async findAll(@Request() req) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    if (userRole === 'admin') {
+      return this.productsService.findAll();
+    }
+
+    return this.productsService.findByUserId(userId);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(+id);
+  async findOne(@Param('id') id: string, @Request() req) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    if (userRole === 'admin') {
+      return this.productsService.findOne(+id);
+    }
+
+    const hasAccess = await this.productsService.checkUserAccess(+id, userId);
+    if (!hasAccess) {
+      throw new ForbiddenException('You do not have access to this product');
+    }
+
+    return this.productsService.findOne(+id, userId, userRole);
   }
 
   @Patch(':id')

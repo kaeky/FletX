@@ -1,0 +1,73 @@
+<div class="product-list-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Products</h1>
+      <p>Manage your product catalog</p>
+    </div>
+    <div class="header-actions" *ngIf="isAdmin">
+      <button mat-raised-button color="primary" routerLink="/products/new">
+        <mat-icon>add</mat-icon> New Product
+      </button>
+    </div>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div class="product-grid" *ngIf="!loading && products.length > 0">
+    <mat-card class="product-card" *ngFor="let product of products">
+      <mat-card-header>
+        <div class="product-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <mat-card-title>{{ product.name }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip-set>
+            <mat-chip color="accent" selected>{{ product.category }}</mat-chip>
+          </mat-chip-set>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="price">${{ product.price | number:'1.2-2' }}</p>
+
+        <div class="company-list" *ngIf="product.companies && product.companies.length > 0">
+          <h4>Companies:</h4>
+          <ul>
+            <li *ngFor="let company of product.companies">{{ company.name }}</li>
+          </ul>
+        </div>
+        <p *ngIf="!product.companies || product.companies.length === 0" class="no-companies">
+          Not associated with any company
+        </p>
+      </mat-card-content>
+
+      <mat-divider></mat-divider>
+
+      <mat-card-actions align="end">
+        <button mat-icon-button color="primary" [routerLink]="['/products', product.id]"
+                matTooltip="View Details">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button color="accent" [routerLink]="['/products/edit', product.id]"
+                matTooltip="Edit" *ngIf="isAdmin">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteProduct(product.id)"
+                matTooltip="Delete" *ngIf="isAdmin">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && products.length === 0">
+    <mat-icon>inventory_2</mat-icon>
+    <h2>No products found</h2>
+    <p>There are no products in the system yet.</p>
+    <button mat-raised-button color="primary" routerLink="/products/new" *ngIf="isAdmin">
+      <mat-icon>add</mat-icon> Add your first product
+    </button>
+  </div>
+</div>

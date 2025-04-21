@@ -23,8 +23,12 @@ export class UsersService {
     if (userExists) {
       throw new ConflictException('Email already exists');
     }
-
-    const user = this.usersRepository.create(createUserDto);
+    const user = this.usersRepository.create({
+      ...createUserDto,
+      ...(createUserDto?.companyId && {
+        company: { id: createUserDto.companyId },
+      }),
+    });
     return this.usersRepository.save(user);
   }
 
@@ -66,7 +70,12 @@ export class UsersService {
     }
 
     // Si hay contraseña, será hasheada por el hook BeforeUpdate
-    const updated = Object.assign(user, updateUserDto);
+    const updated = Object.assign(user, {
+      ...updateUserDto,
+      ...(updateUserDto?.companyId && {
+        company: { id: updateUserDto.companyId },
+      }),
+    });
     return this.usersRepository.save(updated);
   }
 

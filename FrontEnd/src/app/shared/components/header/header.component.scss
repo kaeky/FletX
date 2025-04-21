@@ -1,0 +1,28 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .header-left {
+    display: flex;
+    align-items: center;
+
+    .app-title {
+      margin-left: 10px;
+      font-weight: 500;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+
+    .user-info {
+      margin-right: 10px;
+      font-size: 14px;
+    }
+  }
+}

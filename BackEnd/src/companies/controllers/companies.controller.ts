@@ -28,7 +28,6 @@ export class CompaniesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.companiesService.findAll();
   }

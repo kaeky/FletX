@@ -1,0 +1,29 @@
+<mat-toolbar color="primary" class="header">
+  <div class="header-left">
+    <button mat-icon-button class="sidebar-toggle" (click)="sidebarToggle.emit()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="app-title">Company Management System</span>
+  </div>
+
+  <div class="header-right">
+    <span class="user-info" *ngIf="currentUser">
+      {{ currentUser.firstName }} {{ currentUser.lastName }}
+    </span>
+
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

@@ -7,9 +7,9 @@ import {
   IsNumber,
   IsEnum,
 } from 'class-validator';
-import { UserRole } from '../entities/user.entity';
+import { UserRole } from '../../users/entities/user.entity';
 
-export class CreateUserDto {
+export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   firstName: string;

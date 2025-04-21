@@ -1,0 +1,63 @@
+<div class="user-detail-container">
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" routerLink="/users">
+      Back to Users
+    </button>
+  </div>
+
+  <mat-card *ngIf="!loading && !error && user">
+    <mat-card-header>
+      <mat-card-title>{{ user.firstName }} {{ user.lastName }}</mat-card-title>
+      <mat-card-subtitle>{{ user.role | titlecase }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="detail-section">
+        <h3>Contact Information</h3>
+        <div class="detail-row">
+          <span class="label">Email:</span>
+          <span class="value">{{ user.email }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Phone:</span>
+          <span class="value">{{ user.phone }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="detail-section">
+        <h3>Employment Details</h3>
+        <div class="detail-row">
+          <span class="label">Position:</span>
+          <span class="value">{{ user.position }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Salary:</span>
+          <span class="value">${{ user.salary | number:'1.2-2' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Company:</span>
+          <span class="value">{{ user.company?.name || 'Not assigned' }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button routerLink="/users">
+        <mat-icon>arrow_back</mat-icon> Back
+      </button>
+      <button mat-raised-button color="accent" [routerLink]="['/users/edit', user.id]" *ngIf="isAdmin">
+        <mat-icon>edit</mat-icon> Edit
+      </button>
+      <button mat-raised-button color="warn" (click)="deleteUser()" *ngIf="isAdmin">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

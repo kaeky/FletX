@@ -1,0 +1,12 @@
+<div class="alert" [ngClass]="data.type">
+  <div class="alert-content">
+    <mat-icon *ngIf="data.type === 'success'">check_circle</mat-icon>
+    <mat-icon *ngIf="data.type === 'error'">error</mat-icon>
+    <mat-icon *ngIf="data.type === 'warning'">warning</mat-icon>
+    <mat-icon *ngIf="data.type === 'info'">info</mat-icon>
+    <span>{{ data.message }}</span>
+  </div>
+  <button mat-icon-button (click)="dismiss()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

@@ -30,16 +30,8 @@ export class CompaniesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  async findAll(@Request() req) {
-    const userId = req.user.id;
-    const userRole = req.user.role;
-
-    if (userRole === 'admin') {
-      return this.companiesService.findAll();
-    }
-
-    return this.companiesService.findByUserId(userId);
+  findAll() {
+    return this.companiesService.findAll();
   }
 
   @Get(':id')
